@@ -2,6 +2,9 @@ const express = require('express');
 const {renderIndex} = require('./views');
 const {renderColorStyleTag} = require('./views/components/color-style');
 const {renderImage} = require('./views/components/image');
+const {renderHeading} = require('./views/components/heading');
+const {renderSubheading} = require('./views/components/subheading');
+const {renderButton} = require('./views/components/button');
 require('dotenv').config();
 
 
@@ -10,71 +13,110 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-    const colors = {
-        primaryColor: 'red',
-        secondaryColor: 'blue',
-        backgroundColor: 'black',
-    }
-    const text = 'Hello, World!';
-    const image = {
-        src: 'https://source.unsplash.com/random',
-        alt: 'Random Image',
-    }
-    res.send(renderIndex('Generate', colors, text, image));
+    const randomLayout = Math.random() > 0.5 ?
+        require('./views/layouts/horizontal-layout.js') :
+        require('./views/layouts/vertical-layout.js');
+
+    const colorSchemes = require('./data/colors.js');
+    const textSchemes = require('./data/sentences.js');
+    const images = require('./data/images.js');
+
+    const randomColor = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+    const randomText = textSchemes[Math.floor(Math.random() * textSchemes.length)];
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+
+    const layoutProps = {
+        image: {
+            src: randomImage,
+            alt: 'Random Image',
+        },
+        heading: {
+            title: randomText.heading,
+        },
+        subheading: {
+            title: randomText.subheading,
+        },
+        button: {
+            text: randomText.backToHomeText,
+            preview: true,
+        },
+    };
+
+    res.send(renderIndex({
+        title: 'Home',
+        colors: randomColor,
+        layout: randomLayout(layoutProps),
+    }));
 });
 
 app.get('/gen/colors', (req, res) => {
-    const colors = {
-        primaryColor: 'green',
-        secondaryColor: 'orange',
-        backgroundColor: 'blue',
+    const colors = require('./data/colors.js');
+    let randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+    const params = JSON.parse(req.query.currentValues || '{}');
+
+    while (params.primaryColor === randomColor.primaryColor) {
+        randomColor = colors[Math.floor(Math.random() * colors.length)];
     }
-    res.send(renderColorStyleTag(colors));
+    setTimeout(() => {
+        res.send(renderColorStyleTag(randomColor));
+    }, 200);
 });
 
 app.get('/gen/text', (req, res) => {
-    res.send('Hello, World!');
-})
+    const sentences = require('./data/sentences.js');
+    let randomText = sentences[Math.floor(Math.random() * sentences.length)];
 
-app.get('/gen/image', (req, res) => {
-    res.send(renderImage('https://source.unsplash.com/random', 'Random Image'));
-})
-
-app.get('/gen/randomize', (req, res) => {
-    const colors = {
-        primaryColor: 'yellow',
-        secondaryColor: 'black',
-        backgroundColor: 'white',
+    const params = JSON.parse(req.query.currentValues || '{}');
+    while (params.heading === randomText.heading) {
+        randomText = sentences[Math.floor(Math.random() * sentences.length)];
     }
 
-    res.send(`
-        ${renderColorStyleTag(colors)}
-        
-        <p id="text" hx-swap-oob="true">Random</p>
-        
-        <div id="image" hx-swap-oob="true">
-            ${renderImage('https://source.unsplash.com/random', 'Random Image')}
-        </div>
-    `);
+    setTimeout(() => {
+        res.send(`
+            ${renderHeading({title: randomText.heading})}
+            ${renderSubheading({title: randomText.subheading})}
+            ${renderButton({
+            text: randomText.backToHomeText,
+            preview: true,
+        })}
+        `);
+    }, 200);
+});
+
+app.get('/gen/image', (req, res) => {
+    const images = require('./data/images.js');
+    let randomImage = images[Math.floor(Math.random() * images.length)];
+
+    const params = JSON.parse(req.query.currentValues || '{}');
+    while (params.image === randomImage) {
+        randomImage = images[Math.floor(Math.random() * images.length)];
+    }
+
+    setTimeout(() => {
+        res.send(renderImage({
+            src: randomImage,
+            alt: 'Random Image',
+        }));
+    }, 200);
+});
+
+app.get('/gen/randomize', (req, res) => {
+    res.setHeader('HX-Redirect', '/');
+    setTimeout(() => {
+        res.send();
+    }, 200);
 });
 
 app.get('/gen/html', (req, res) => {
-    const colors = {
-        primaryColor: 'purple',
-        secondaryColor: 'pink',
-        backgroundColor: 'white',
-    }
-    const text = 'Hello, World!';
-    const image = {
-        src: 'https://source.unsplash.com/random',
-        alt: 'Random Image',
-    }
-    res.send(renderIndex('Download', colors, text, image));
+    setTimeout(() => {
+        res.send();
+    }, 200);
 });
 
 app.listen(PORT, () => {

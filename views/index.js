@@ -1,17 +1,15 @@
 const {renderConfigPanel} = require('./partials/config-panel');
 const {renderColorStyleTag} = require('./components/color-style');
-const {renderImage} = require('./components/image');
-module.exports.renderIndex = (title, colors, text, image) => `
+
+module.exports.renderIndex = (props) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>${title}</title>
+    <title>${props.title}</title>
     <script src="htmx.js" defer></script>
-
-    
-        ${renderColorStyleTag(colors)}
+    ${renderColorStyleTag(props.colors)}
     </style>
 
     <style>
@@ -25,7 +23,14 @@ module.exports.renderIndex = (title, colors, text, image) => `
             align-items: center;
             height: 100vh;
             background-color: var(--background-color);
+        }
+        
+        body h1 {
             color: var(--primary-color);
+        }
+        
+        body h3 {
+            color: var(--secondary-color);
         }
 
         .i-config-panel {
@@ -49,15 +54,16 @@ module.exports.renderIndex = (title, colors, text, image) => `
             }
         }
     </style>
+    
+    <script src="listeners.js" defer></script>
 </head>
 <body>
 
 <div class="i-config-panel">
-    ${renderConfigPanel()}
+    ${renderConfigPanel(props)}
 </div>
 
-<div id="image">${renderImage(image.src, image.alt)}</div>
-<p id="text">${text}</p>
+${props.layout}
 
 </body>
 </html>

@@ -1,7 +1,13 @@
-module.exports.renderImage = (src, alt) => `
-    <img
-        src="${src}"
-        alt="${alt}"
-        style="width: 100%;"
-    />
-`;
+module.exports.renderImage = (props) => {
+    return `
+        <img class="i-image" data-image-src="${props.src}" src="${props.src}" alt="${props.alt}" />
+        
+        <style>
+            img.i-image {
+                height: 30vh;
+                width: 100%;
+                object-fit: cover;
+            }
+        </style>
+    `;
+}
