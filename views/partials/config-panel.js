@@ -44,7 +44,8 @@ module.exports.renderConfigPanel = (props) => {
                 renderButton({
                     text: 'Generate HTML',
                     getUrl: '/gen/html',
-                    swap: 'afterend',
+                    swap: 'beforeend',
+                    target: 'body',
                     secondary: true
                 }),
             ]

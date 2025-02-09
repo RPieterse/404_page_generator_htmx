@@ -5,7 +5,7 @@ const {renderButton} = require('../components/button');
 module.exports = (props) => {
 
     return `
-        <main id="layout" hx-swap-oob="true">
+        <main id="layout" ${!props.preview ? `data-layout-type="vertical"` : ''} hx-swap-oob="true">
             <div id="image">
                 ${renderImage(props.image)}
             </div>

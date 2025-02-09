@@ -1,6 +1,6 @@
 module.exports.renderImage = (props) => {
     return `
-        <img class="i-image" data-image-src="${props.src}" src="${props.src}" alt="${props.alt}" />
+        <img class="i-image" ${!props.preview ? `data-image-src="${props.src}"` : ''} src="${props.src}" alt="${props.alt}" />
         
         <style>
             img.i-image {
@@ -10,4 +10,4 @@ module.exports.renderImage = (props) => {
             }
         </style>
     `;
-}
+};

@@ -8,19 +8,23 @@ module.exports.renderButton = (props) => {
     } else {
         if (props.postUrl) {
             attributes = `
-            hx-post="${props.postUrl} 
-        `;
-        } else {
+                hx-post="${props.postUrl}" 
+            `;
+        } else if (props.getUrl) {
             attributes = `
-            hx-get="${props.getUrl}"
-        `;
+                hx-get="${props.getUrl}" 
+            `;
+        } else if (props.onclick) {
+            attributes = `
+                hx-on:click="${props.onclick}" 
+            `;
         }
 
         if (props.swap){
-            attributes += ` hx-swap="${props.swap}"`;
+            attributes += ` hx-swap="${props.swap}" `;
         }
         if (props.target) {
-            attributes += ` hx-target="${props.target}"`;
+            attributes += ` hx-target="${props.target}" `;
         }
     }
 
@@ -29,7 +33,7 @@ module.exports.renderButton = (props) => {
             class="i-button ${props.secondary ? 'secondary' : 'primary'}"
             ${attributes}">
             ${props.text}
-            <img height="15px" width="15px" class="htmx-indicator" src="/assets/images/gifs/spinner.gif">
+            ${!props.preview ? `<img height="15px" width="15px" class="htmx-indicator" src="/assets/images/gifs/spinner.gif"` : '' }>
         </button>
     
         <style>
@@ -65,15 +69,17 @@ module.exports.renderButton = (props) => {
                 background-color: mediumpurple;
                 color: white;
             }
-                    
-            .htmx-indicator{
-                display:none;
-            }
             
-            .htmx-request .htmx-indicator{
-                opacity: 1;
-                display:inline;
-            }          
+            ${!props.preview ? `        
+                .htmx-indicator{
+                    display:none;
+                }
+                
+                .htmx-request .htmx-indicator{
+                    opacity: 1;
+                    display:inline;
+                }`
+            : ''}
         </style>
     `;
 }
